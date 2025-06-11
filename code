@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Guindaille 2.0 - Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --main-pink: #d6006d;
+      --main-black: #111;
+      --main-white: #fff;
+    }
+    body {
+      background: var(--main-pink);
+      font-family: 'Baloo 2', Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .quiz-container {
+      max-width: 500px;
+      margin: 40px auto;
+      background: var(--main-white);
+      border-radius: 24px;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.12);
+      padding: 32px 24px 24px 24px;
+      position: relative;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .header-title {
+      color: var(--main-white);
+      font-size: 2.2em;
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin-bottom: 0;
+      margin-top: 0;
+      text-shadow: 0 2px 8px #0002;
+    }
+    .logo-circle {
+      background: var(--main-black);
+      color: var(--main-white);
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3em;
+      font-weight: bold;
+      margin: 0 auto 16px auto;
+      box-shadow: 0 2px 12px #0003;
+    }
+    .category-intro {
+      text-align: center;
+      margin: 40px 0 20px 0;
+    }
+    .category-title {
+      color: var(--main-pink);
+      font-size: 1.5em;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+    .category-btn {
+      background: var(--main-black);
+      color: var(--main-white);
+      border: none;
+      border-radius: 24px;
+      padding: 12px 32px;
+      font-size: 1.1em;
+      font-family: 'Baloo 2', Arial, sans-serif;
+      cursor: pointer;
+      margin-top: 24px;
+      transition: background 0.2s;
+    }
+    .category-btn:hover {
+      background: #333;
+    }
+    .question {
+      font-size: 1.2em;
+      color: var(--main-pink);
+      margin-bottom: 24px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .slider-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .slider {
+      width: 80%;
+      accent-color: var(--main-pink);
+      margin-bottom: 8px;
+    }
+    .slider-value {
+      font-size: 1.5em;
+      color: var(--main-black);
+      font-weight: bold;
+      background: #eee;
+      border-radius: 12px;
+      padding: 4px 18px;
+      margin-top: 4px;
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+    .submit-btn {
+      background: var(--main-pink);
+      color: var(--main-white);
+      border: none;
+      border-radius: 24px;
+      padding: 12px 32px;
+      font-size: 1.1em;
+      font-family: 'Baloo 2', Arial, sans-serif;
+      cursor: pointer;
+      margin: 0 auto;
+      display: block;
+      transition: background 0.2s;
+    }
+    .submit-btn[hidden] {
+      display: none;
+    }
+    .submit-btn:hover {
+      background: #b00056;
+    }
+    .result {
+      margin-top: 18px;
+      font-size: 1.1em;
+      text-align: center;
+      font-weight: bold;
+    }
+    .result.good {
+      color: #1bbf5c;
+    }
+    .result.medium {
+      color: #f7b500;
+    }
+    .result.bad {
+      color: #d6006d;
+    }
+    .explanation {
+      margin-top: 8px;
+      font-style: italic;
+      color: #555;
+      text-align: center;
+    }
+    .score {
+      margin-top: 32px;
+      font-size: 1.3em;
+      color: var(--main-pink);
+      text-align: center;
+      font-weight: bold;
+    }
+    .final-score-circle {
+      background: var(--main-black);
+      color: var(--main-white);
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2em;
+      font-weight: bold;
+      margin: 24px auto 16px auto;
+      box-shadow: 0 2px 12px #0003;
+    }
+    @media (max-width: 600px) {
+      .quiz-container { padding: 16px 4px; }
+      .logo-circle { width: 80px; height: 80px; font-size: 2em; }
+      .final-score-circle { width: 70px; height: 70px; font-size: 1.3em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header" style="background: var(--main-pink); padding: 24px 0 8px 0;">
+    <div class="header-title">Guindaille</div>
+    <div class="logo-circle">2.0</div>
+  </div>
+  <div class="quiz-container" id="quizContainer">
+    <!-- Tout le contenu dynamique sera injecté ici -->
+  </div>
+  <script>
+    // --- DATA ---
+    const categories = [
+      {
+        title: "Connaissances sur la consommation et les habitudes",
+        certaintyQuestion: "Tu te mets combien à propos de tes connaissances sur la consommation et les habitudes des étudiants ?",
+        questions: [
+          {
+            text: "En moyenne, combien de verres consomme un étudiant en soirée ?",
+            answer: 6,
+            explanation: "En moyenne, un étudiant boit 6 verres lors d'une soirée."
+          },
+          {
+            text: "Tu estimes combien de sorties (alcoolisée) d'autres étudiants par mois ?",
+            answer: 4,
+            explanation: "En moyenne, un étudiant consomme de l'alcool 4 fois par mois."
+          },
+          {
+            text: "Combien de verres en moyenne bois un étudiant lors d'une soirée \"binge drinking\" ?",
+            answer: 6,
+            explanation: "En moyenne, un étudiant boit 6 verres lors d'une soirée."
+          },
+          {
+            text: "Selon toi, un étudiant consomme de l'alcool combien de jours chaque semaine ?",
+            answer: 2,
+            explanation: "La moyenne est à 2 jours par semaine. Étonnant lorsque qu'on sait qu'une bonne partie des étudiants pensent que celle-ci est à 4 jours par semaine."
+          }
+        ]
+      },
+      {
+        title: "Risques et conséquences liées à l'alcool",
+        certaintyQuestion: "Tu te mets combien à propos de tes connaissances sur les risques et conséquences liées à l'alcool ?",
+        questions: [
+          {
+            text: "D'après toi, combien d'étudiants avouent avoir déjà bu sous l'influence de l'alcool ?",
+            answer: 2,
+            explanation: "En moyenne, 2 étudiants sur 10 avouent avoir conduit sous l'influence de l'alcool."
+          },
+          {
+            text: "À ton avis, à quel point est-ce que les gens brossent les cours ?",
+            answer: 2,
+            explanation: "2 étudiants sur 10 disent sécher souvent les cours à cause des soirées."
+          },
+          {
+            text: "En moyenne, combien de fois par an est-ce qu'un étudiant regrette sa consommation d'alcool ?",
+            answer: 3,
+            explanation: "En moyenne, un étudiant dit regretter sa consommation d'alcool 3 fois par an."
+          },
+          {
+            text: "À quel point est-ce que la dépendance à l'alcool est fréquente chez les étudiants d'après toi ?",
+            answer: 1,
+            explanation: "Plus d'un étudiant sur 10 a déjà développé une dépendance ou eu des problèmes de santé liés à l'alcool."
+          }
+        ]
+      },
+      {
+        title: "Perception et influence sociale",
+        certaintyQuestion: "Tu te mets combien à propos de tes connaissances sur la perception et l'influence sociale liées à l'alcool ?",
+        questions: [
+          {
+            text: "Quelle est ta conscience des risques liée à l'alcool ? Et celle des autres d'après-toi ?",
+            answer: 6,
+            explanation: "Chez les étudiants, la moyenne est à 6/10."
+          },
+          {
+            text: "Sur une échelle de 1 à 10, à combien estimes-tu le niveau de pression sociale pour boire dans les soirées étudiantes ?",
+            answer: 7,
+            explanation: "La réponse est 7."
+          },
+          {
+            text: "Sur une échelle de 1 à 10, à combien estimes-tu le niveau de soutien disponible pour les étudiants ayant des problèmes d'alcool ?",
+            answer: 4,
+            explanation: "La réponse est 4."
+          }
+        ]
+      }
+    ];
+
+    // --- STATE ---
+    let currentCategory = 0;
+    let currentQuestion = -2; // -2: intro, -1: certitude, >=0: question
+    let certaintyScores = [];
+    let categoryScores = [];
+    let userAnswers = [];
+    let malusByCategory = [];
+
+    // --- RENDERING ---
+    const quizContainer = document.getElementById('quizContainer');
+
+    function renderCategoryIntro() {
+      quizContainer.innerHTML = `
+        <div class="category-intro">
+          <div class="category-title">${categories[currentCategory].title}</div>
+          <button class="category-btn" id="nextCategoryBtn">Suivant</button>
+        </div>
+      `;
+      document.getElementById('nextCategoryBtn').onclick = () => {
+        currentQuestion = -1;
+        renderCertaintyQuestion();
+      };
+    }
+
+    function renderCertaintyQuestion() {
+      quizContainer.innerHTML = `
+        <div class="question">${categories[currentCategory].certaintyQuestion}</div>
+        <div class="slider-container">
+          <input type="range" min="1" max="10" value="5" class="slider" id="slider">
+          <span class="slider-value" id="sliderValue">5</span>
+        </div>
+        <button class="submit-btn" id="submitBtn">Valider</button>
+      `;
+      const slider = document.getElementById('slider');
+      const sliderValue = document.getElementById('sliderValue');
+      slider.oninput = () => sliderValue.textContent = slider.value;
+      document.getElementById('submitBtn').onclick = () => {
+        certaintyScores[currentCategory] = parseInt(slider.value, 10);
+        currentQuestion = 0;
+        renderQuestion();
+      };
+    }
+
+    function renderQuestion() {
+      const q = categories[currentCategory].questions[currentQuestion];
+      quizContainer.innerHTML = `
+        <div class="question">${q.text}</div>
+        <div class="slider-container">
+          <input type="range" min="1" max="10" value="5" class="slider" id="slider">
+          <span class="slider-value" id="sliderValue">5</span>
+        </div>
+        <button class="submit-btn" id="submitBtn">Valider</button>
+        <div class="result" id="result"></div>
+        <div class="explanation" id="explanation"></div>
+      `;
+      const slider = document.getElementById('slider');
+      const sliderValue = document.getElementById('sliderValue');
+      slider.oninput = () => sliderValue.textContent = slider.value;
+      document.getElementById('submitBtn').onclick = () => {
+        // Masquer le bouton après validation
+        document.getElementById('submitBtn').hidden = true;
+        handleAnswer(parseInt(slider.value, 10));
+      };
+    }
+
+    function handleAnswer(userValue) {
+      const q = categories[currentCategory].questions[currentQuestion];
+      const diff = Math.abs(userValue - q.answer);
+      let pts = 0;
+      let malus = 0;
+      let resultClass = "bad";
+      if (diff === 0) { pts = 1; resultClass = "good"; }
+      else if (diff === 1) { pts = 0.75; resultClass = "medium"; }
+      else if (diff === 2) { pts = 0.25; resultClass = "medium"; }
+      else { malus = -0.5; resultClass = "bad"; }
+      userAnswers.push({cat: currentCategory, q: currentQuestion, pts, malus, userValue, answer: q.answer});
+      document.getElementById('result').textContent =
+        diff === 0 ? "Bravo, réponse exacte !" :
+        diff === 1 ? "Presque ! Tu n'étais qu'à 1 près." :
+        diff === 2 ? "Pas loin, tu étais à 2 près." :
+        "Raté ! Tu perds 0,5 point.";
+      document.getElementById('result').className = "result " + resultClass;
+      document.getElementById('explanation').textContent = q.explanation;
+      setTimeout(() => {
+        currentQuestion++;
+        if (currentQuestion < categories[currentCategory].questions.length) {
+          renderQuestion();
+        } else {
+          // Calcul du score de la catégorie
+          const start = userAnswers.length - categories[currentCategory].questions.length;
+          const end = userAnswers.length;
+          let rawScore = userAnswers.slice(start, end).reduce((sum, ans) => sum + ans.pts, 0);
+          let rawMalus = userAnswers.slice(start, end).reduce((sum, ans) => sum + ans.malus, 0);
+          let coef = 1 + (certaintyScores[currentCategory] / 10);
+          let scoreWithCoef = rawScore * coef;
+          let malusWithCoef = rawMalus * coef;
+          categoryScores[currentCategory] = +(scoreWithCoef + malusWithCoef).toFixed(2);
+          malusByCategory[currentCategory] = +(malusWithCoef).toFixed(2);
+          // Catégorie suivante ou fin
+          currentCategory++;
+          if (currentCategory < categories.length) {
+            currentQuestion = -2;
+            setTimeout(renderCategoryIntro, 4000);
+          } else {
+            setTimeout(renderFinalScore, 4000);
+          }
+        }
+      }, 4000);
+    }
+
+    function renderFinalScore() {
+      const total = categoryScores.reduce((a, b) => a + b, 0);
+      quizContainer.innerHTML = `
+        <div class="final-score-circle">${total.toFixed(2)}</div>
+        <div class="score">Score final (avec coefficients et malus) : <br><b>${total.toFixed(2)}</b></div>
+        <div style="margin-top:24px;">
+          ${categories.map((cat, i) =>
+            `<div style="margin-bottom:10px;">
+              <span style="color:var(--main-pink);font-weight:bold;">${cat.title}</span><br>
+              Score (avec coef) : ${(categoryScores[i] - malusByCategory[i]).toFixed(2)}<br>
+              Malus : ${malusByCategory[i]}<br>
+              Coefficient : ${certaintyScores[i]}/10
+            </div>`
+          ).join('')}
+        </div>
+        <div style="margin-top:32px;text-align:center;">
+          <button class="category-btn" onclick="location.reload()">Recommencer</button>
+        </div>
+      `;
+    }
+
+    // --- INIT ---
+    renderCategoryIntro();
+  </script>
+</body>
+</html>
